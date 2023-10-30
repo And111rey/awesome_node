@@ -6,21 +6,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const port = 3000;
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-});
-app.get("/samurais", (req, res) => {
-    const a = 4;
-    if (a > 5) {
-        res.send("ok");
+const db = {
+    courses: [
+        { id: 1, title: "front-end" },
+        { id: 2, title: "back-end" },
+        { id: 3, title: "basic QA" },
+    ],
+};
+app.get("/courses", (req, res) => {
+    let filteredCourses = db.courses;
+    if (req.query.title) {
+        filteredCourses = db.courses.filter((el) => el.title.indexOf(req.query.title) > -1);
     }
-    else {
-        res.send("Hello samurai, hello world!!!!...>>>!!@@@@&&&&!");
-    }
+    res.json(filteredCourses);
 });
-app.post("/samurais", (req, res) => {
-    console.log("We created samurai");
-    res.send("We created samurai!");
+app.get("/courses/:id", (req, res) => {
+    console.log("QUERY----", req.params.id);
+    const foundCourse = db.courses.find((el) => el.id === +req.params.id);
+    console.log(foundCourse);
+    if (!foundCourse) {
+        res.sendStatus(404);
+        return;
+    }
+    res.json(foundCourse);
 });
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
