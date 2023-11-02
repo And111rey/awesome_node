@@ -3,6 +3,9 @@ import { url } from "inspector";
 const app = express();
 const port = 3000;
 
+const jsonBodyMiddleware = express.json()
+app.use(jsonBodyMiddleware)
+
 const db = {
   courses: [
     { id: 1, title: "front-end" },
@@ -30,6 +33,29 @@ app.get("/courses/:id", (req, res) => {
   }
   res.json(foundCourse);
 });
+
+app.post("/courses", (req, res) => {
+  if(!req.body.title) {
+    res.sendStatus(400)
+    return 
+  }
+  let createdCourse = {
+    id: +new Date(),
+    title: req.body.title,
+  };
+  db.courses.push(createdCourse);
+  res.status(200).json(db.courses)
+
+  
+});
+
+app.delete("/courses/:id", (req, res) => {
+  console.log("QUERY----", req.params.id);
+  db.courses = db.courses.filter((el) => el.id !== +req.params.id);
+ 
+  res.sendStatus(204);
+});
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
